@@ -31,6 +31,11 @@ Vue.component('AppHome', require('./components/AppHome.vue').default);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+import User from './Helpers/User';
+window.User = User;
+User.logout();
+console.log(User.isLoggedIn());
+
 import router from './Router/router';
 
 const app = new Vue({

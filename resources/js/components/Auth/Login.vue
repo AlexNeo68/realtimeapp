@@ -25,14 +25,8 @@ export default {
     error: null
   }),
   methods: {
-    async login() {
-      try {
-        const res = await axios.post("api/auth/login", this.form);
-        console.log(res.data);
-      } catch (error) {
-        console.log(error.response);
-        this.error = error.response.data.error;
-      }
+    login() {
+      User.login(this.form);
     }
   }
 };
