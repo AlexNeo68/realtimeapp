@@ -11,6 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LikeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('JWT', ['except' => ['index']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +34,7 @@ class LikeController extends Controller
      */
     public function store(Request $request, Question $question, Reply $reply)
     {
-        $like = $reply->likes()->create(['user_id' => 1]);
+        $like = $reply->likes()->create(['user_id' => auth()->id()]);
         return response()->json(new LikeResource($like), Response::HTTP_CREATED);
     }
 

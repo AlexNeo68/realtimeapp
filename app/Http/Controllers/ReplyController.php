@@ -10,6 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReplyController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('JWT', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +34,9 @@ class ReplyController extends Controller
      */
     public function store(Request $request, Question $question)
     {
-        $reply = $question->replies()->create($request->all());
+        $data = $request->all();
+        $data['user_id'] = auth()->id();
+        $reply = $question->replies()->create($data);
         return response()->json(new ReplyResource($reply), Response::HTTP_CREATED);
     }
 
