@@ -1,6 +1,8 @@
 <template>
   <v-toolbar>
-    <v-toolbar-title>ReakTimeForum</v-toolbar-title>
+    <v-toolbar-title>
+      <router-link to="/">ReakTimeForum</router-link>
+    </v-toolbar-title>
 
     <v-spacer></v-spacer>
 
