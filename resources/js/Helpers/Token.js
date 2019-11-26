@@ -1,13 +1,14 @@
 class Token {
     isValid(token) {
         const payload = this.payload(token);
-        return payload.iss == 'http://127.0.0.1:8000/api/auth/login'
+        return payload.iss == "http://realtimeapp.loc/api/auth/login" ||
+            payload.iss == "http://realtimeapp.loc/api/auth/signup"
             ? true
             : false;
     }
 
     payload(token) {
-        const payload = token.split('.')[1];
+        const payload = token.split(".")[1];
         if (payload) return this.decode(payload);
         return false;
     }

@@ -10,6 +10,9 @@
 
       <v-card-actions>
         <v-btn color="success" type="submit">LogIn</v-btn>
+        <router-link to="signup" class="ml-5">
+          <v-btn color="info">Signup</v-btn>
+        </router-link>
       </v-card-actions>
     </v-form>
   </v-card>
@@ -26,7 +29,7 @@ export default {
   }),
   methods: {
     login() {
-      User.login(this.form);
+      User.login(this.form, this.$router);
     }
   }
 };
