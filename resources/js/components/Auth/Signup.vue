@@ -43,6 +43,9 @@ export default {
 			password: null
 		}
 	}),
+    created(){
+        if (User.isLoggedIn()) this.$router.push({name:'forum'});
+    },
 	methods: {
 		signup() {
 			this.error = User.signup(this.form, this.$router);

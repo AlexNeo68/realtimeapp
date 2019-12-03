@@ -29,6 +29,7 @@ class User {
 		const { user, access_token } = res.data;
 		if (Token.isValid(access_token)) {
 			AppStorage.store(access_token, user);
+			window.location = '/forum';
 		} else {
 		    console.log('Token is not validation');
         }
@@ -48,6 +49,7 @@ class User {
 
 	logout() {
 		AppStorage.clear();
+        window.location = '/forum';
 	}
 
 	name() {
