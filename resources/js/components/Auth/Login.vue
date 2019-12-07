@@ -31,8 +31,8 @@ export default {
       if (User.isLoggedIn()) this.$router.push({name:'forum'});
     },
   methods: {
-    login() {
-      User.login(this.form, this.$router);
+    async login() {
+      this.error = await User.login(this.form, this.$router);
     }
   }
 };
