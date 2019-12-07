@@ -23,7 +23,7 @@ export default {
         return {
             items: [
             { title: 'Forum', to: '/forum', show: true },
-            { title: 'Ask Question', to: '/forum', show: User.isLoggedIn() },
+            { title: 'Ask Question', to: '/question-create', show: User.isLoggedIn() },
             { title: 'Category', to: '/forum', show: User.isLoggedIn() },
             { title: 'Login', to: '/login', show: !User.isLoggedIn() },
             { title: 'Logout', to: '/logout', show: User.isLoggedIn() },
