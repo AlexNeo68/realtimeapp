@@ -2106,18 +2106,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       form: {
         name: null
       },
+      editSlug: null,
       error: null,
       errors: null,
       categories: []
     };
   },
   methods: {
+    submit: function submit() {
+      if (this.editSlug) {
+        this.update();
+      } else {
+        this.create();
+      }
+    },
     create: function () {
       var _create = _asyncToGenerator(
       /*#__PURE__*/
@@ -2129,33 +2144,32 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context.prev = 0;
                 _context.next = 3;
-                return axios.post("/api/categories", this.form);
+                return axios.post('/api/categories', this.form);
 
               case 3:
                 res = _context.sent;
-                this.$router.push({
-                  name: "forum"
-                });
-                _context.next = 11;
+                this.categories.unshift(res.data);
+                this.form.name = '';
+                _context.next = 12;
                 break;
 
-              case 7:
-                _context.prev = 7;
+              case 8:
+                _context.prev = 8;
                 _context.t0 = _context["catch"](0);
                 console.log(_context.t0.response);
 
                 if (_context.t0.response.status == 422) {
                   this.errors = _context.t0.response.data.errors;
                 } else {
-                  this.error = _context.t0.response.data.message;
+                  this.error = _context.t0.response.data.message ? _context.t0.response.data.message : _context.t0.response.data.error;
                 }
 
-              case 11:
+              case 12:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 7]]);
+        }, _callee, this, [[0, 8]]);
       }));
 
       function create() {
@@ -2163,38 +2177,131 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return create;
+    }(),
+    startUpd: function startUpd(key) {
+      this.form.name = this.categories[key].name;
+      this.categories.splice(key, 1);
+      this.editSlug = this.categories[key].slug;
+    },
+    update: function () {
+      var _update = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                _context2.next = 3;
+                return axios.patch("/api/categories/".concat(this.editSlug), this.form);
+
+              case 3:
+                res = _context2.sent;
+                this.categories.unshift(res.data);
+                this.form.name = '';
+                this.editSlug = null;
+                _context2.next = 13;
+                break;
+
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](0);
+                console.log(_context2.t0.response);
+
+                if (_context2.t0.response.status == 422) {
+                  this.errors = _context2.t0.response.data.errors;
+                } else {
+                  this.error = _context2.t0.response.data.message ? _context2.t0.response.data.message : _context2.t0.response.data.error;
+                }
+
+              case 13:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 9]]);
+      }));
+
+      function update() {
+        return _update.apply(this, arguments);
+      }
+
+      return update;
+    }(),
+    destroy: function () {
+      var _destroy = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(slug, key) {
+        var res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.prev = 0;
+                _context3.next = 3;
+                return axios["delete"]("/api/categories/".concat(slug));
+
+              case 3:
+                res = _context3.sent;
+                this.categories.splice(key, 1);
+                _context3.next = 11;
+                break;
+
+              case 7:
+                _context3.prev = 7;
+                _context3.t0 = _context3["catch"](0);
+                console.log(_context3.t0.response);
+                this.error = _context3.t0.response.data.message ? _context3.t0.response.data.message : _context3.t0.response.data.error;
+
+              case 11:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[0, 7]]);
+      }));
+
+      function destroy(_x, _x2) {
+        return _destroy.apply(this, arguments);
+      }
+
+      return destroy;
     }()
   },
   created: function () {
     var _created = _asyncToGenerator(
     /*#__PURE__*/
-    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
       var res;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context4.prev = _context4.next) {
             case 0:
-              _context2.prev = 0;
-              _context2.next = 3;
-              return axios.get("/api/categories");
+              if (!User.isAdmin()) this.$router.push({
+                name: 'forum'
+              });
+              _context4.prev = 1;
+              _context4.next = 4;
+              return axios.get('/api/categories');
 
-            case 3:
-              res = _context2.sent;
+            case 4:
+              res = _context4.sent;
               this.categories = res.data;
-              _context2.next = 10;
+              _context4.next = 11;
               break;
 
-            case 7:
-              _context2.prev = 7;
-              _context2.t0 = _context2["catch"](0);
-              console.log(_context2.t0.response);
+            case 8:
+              _context4.prev = 8;
+              _context4.t0 = _context4["catch"](1);
+              console.log(_context4.t0.response);
 
-            case 10:
+            case 11:
             case "end":
-              return _context2.stop();
+              return _context4.stop();
           }
         }
-      }, _callee2, this, [[0, 7]]);
+      }, _callee4, this, [[1, 8]]);
     }));
 
     function created() {
@@ -2953,30 +3060,30 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       items: [{
-        title: "Forum",
-        to: "/forum",
+        title: 'Forum',
+        to: '/forum',
         show: true
       }, {
-        title: "Ask Question",
-        to: "/question-create",
+        title: 'Ask Question',
+        to: '/question-create',
         show: User.isLoggedIn()
       }, {
-        title: "Category",
-        to: "/category-add",
-        show: User.isLoggedIn()
+        title: 'Category',
+        to: '/category-add',
+        show: User.isAdmin()
       }, {
-        title: "Login",
-        to: "/login",
+        title: 'Login',
+        to: '/login',
         show: !User.isLoggedIn()
       }, {
-        title: "Logout",
-        to: "/logout",
+        title: 'Logout',
+        to: '/logout',
         show: User.isLoggedIn()
       }]
     };
   },
   created: function created() {
-    EventBus.$on("logout", function () {
+    EventBus.$on('logout', function () {
       User.logout();
     });
   }
@@ -57014,7 +57121,7 @@ var render = function() {
           on: {
             submit: function($event) {
               $event.preventDefault()
-              return _vm.create($event)
+              return _vm.submit($event)
             }
           }
         },
@@ -57069,9 +57176,17 @@ var render = function() {
               _c(
                 "v-card-actions",
                 [
-                  _c("v-btn", { attrs: { color: "success", type: "submit" } }, [
-                    _vm._v("Create")
-                  ])
+                  _vm.editSlug
+                    ? _c(
+                        "v-btn",
+                        { attrs: { color: "orange", type: "submit" } },
+                        [_vm._v("Update")]
+                      )
+                    : _c(
+                        "v-btn",
+                        { attrs: { color: "success", type: "submit" } },
+                        [_vm._v("Create")]
+                      )
                 ],
                 1
               )
@@ -57084,51 +57199,76 @@ var render = function() {
       _vm._v(" "),
       _c(
         "v-card",
-        { staticClass: "mx-auto mt-10", attrs: { tile: "" } },
+        { staticClass: "mx-auto my-10" },
         [
           _c(
+            "v-toolbar",
+            { attrs: { color: "light-blue", dark: "" } },
+            [_c("v-toolbar-title", [_vm._v("Categories")])],
+            1
+          ),
+          _vm._v(" "),
+          _c(
             "v-list",
-            { attrs: { rounded: "" } },
-            [
-              _c("v-header", [_c("h3", [_vm._v("Categories")])]),
-              _vm._v(" "),
-              _c(
-                "v-list-item-group",
-                { attrs: { color: "primary" } },
-                _vm._l(_vm.categories, function(category, i) {
-                  return _c(
-                    "v-list-item",
-                    { key: i },
+            { attrs: { "two-line": "", subheader: "" } },
+            _vm._l(_vm.categories, function(category, key) {
+              return _c(
+                "v-list-item",
+                { key: key },
+                [
+                  _c(
+                    "v-list-item-avatar",
                     [
                       _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", {
-                            domProps: { textContent: _vm._s(category.name) }
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "v-list-item-actions",
-                            [
-                              _c(
-                                "v-btn",
-                                { attrs: { icon: "" } },
-                                [_c("v-icon", [_vm._v("mdi-anchor")])],
-                                1
-                              )
-                            ],
-                            1
-                          )
-                        ],
+                        "v-btn",
+                        {
+                          attrs: { small: "", icon: "", color: "orange" },
+                          on: {
+                            click: function($event) {
+                              return _vm.startUpd(key)
+                            }
+                          }
+                        },
+                        [_c("v-icon", [_vm._v("mdi-pencil")])],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item-content",
+                    [
+                      _c("v-list-item-title", {
+                        domProps: { textContent: _vm._s(category.name) }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item-action",
+                    [
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { small: "", icon: "", color: "red" },
+                          on: {
+                            click: function($event) {
+                              return _vm.destroy(category.slug, key)
+                            }
+                          }
+                        },
+                        [_c("v-icon", [_vm._v("mdi-delete")])],
                         1
                       )
                     ],
                     1
                   )
-                }),
+                ],
                 1
               )
-            ],
+            }),
             1
           )
         ],
@@ -110438,13 +110578,13 @@ function () {
               case 0:
                 _context.prev = 0;
                 _context.next = 3;
-                return axios.post("api/auth/login", data);
+                return axios.post('api/auth/login', data);
 
               case 3:
                 res = _context.sent;
                 this.responseAfterLogin(res);
                 router.push({
-                  name: "forum"
+                  name: 'forum'
                 });
                 return _context.abrupt("return", true);
 
@@ -110481,13 +110621,13 @@ function () {
               case 0:
                 _context2.prev = 0;
                 _context2.next = 3;
-                return axios.post("api/auth/signup", data);
+                return axios.post('api/auth/signup', data);
 
               case 3:
                 res = _context2.sent;
                 this.responseAfterLogin(res);
                 router.push({
-                  name: "forum"
+                  name: 'forum'
                 });
                 return _context2.abrupt("return", true);
 
@@ -110520,9 +110660,9 @@ function () {
 
       if (_Token__WEBPACK_IMPORTED_MODULE_1__["default"].isValid(access_token)) {
         _AppStorage__WEBPACK_IMPORTED_MODULE_2__["default"].store(access_token, user);
-        window.location = "/forum";
+        window.location = '/forum';
       } else {
-        console.log("Token is not validation");
+        console.log('Token is not validation');
       }
     }
   }, {
@@ -110545,7 +110685,7 @@ function () {
     key: "logout",
     value: function logout() {
       _AppStorage__WEBPACK_IMPORTED_MODULE_2__["default"].clear();
-      window.location = "/forum";
+      window.location = '/forum';
     }
   }, {
     key: "name",
@@ -110568,6 +110708,11 @@ function () {
     key: "own",
     value: function own(id) {
       return this.id() == id;
+    }
+  }, {
+    key: "isAdmin",
+    value: function isAdmin() {
+      return this.id() == 12;
     }
   }]);
 
@@ -111701,8 +111846,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/alex_neo_68/Documents/sites/realtimeapp/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/alex_neo_68/Documents/sites/realtimeapp/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/alex_neo/Documents/sites/realtimeapp/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/alex_neo/Documents/sites/realtimeapp/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ }),
