@@ -3048,8 +3048,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Reply__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Reply */ "./resources/js/components/Reply/Reply.vue");
-/* harmony import */ var _ReplyAdd__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ReplyAdd */ "./resources/js/components/Reply/ReplyAdd.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Reply__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Reply */ "./resources/js/components/Reply/Reply.vue");
+/* harmony import */ var _ReplyAdd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ReplyAdd */ "./resources/js/components/Reply/ReplyAdd.vue");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -3060,10 +3068,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['data'],
+  props: ["data"],
   components: {
-    Reply: _Reply__WEBPACK_IMPORTED_MODULE_0__["default"],
-    ReplyAdd: _ReplyAdd__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Reply: _Reply__WEBPACK_IMPORTED_MODULE_1__["default"],
+    ReplyAdd: _ReplyAdd__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
@@ -3077,9 +3085,47 @@ __webpack_require__.r(__webpack_exports__);
     listen: function listen() {
       var _this = this;
 
-      EventBus.$on('newReply', function (reply) {
+      EventBus.$on("newReply", function (reply) {
         _this.replies.unshift(reply);
       });
+      EventBus.$on("deleteReply",
+      /*#__PURE__*/
+      function () {
+        var _ref = _asyncToGenerator(
+        /*#__PURE__*/
+        _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(id) {
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _context.prev = 0;
+                  _context.next = 3;
+                  return axios["delete"]("/api/questions/".concat(_this.data.slug, "/replies/").concat(id));
+
+                case 3:
+                  _this.replies = _this.replies.filter(function (reply) {
+                    return reply.id !== id;
+                  });
+                  _context.next = 9;
+                  break;
+
+                case 6:
+                  _context.prev = 6;
+                  _context.t0 = _context["catch"](0);
+                  console.log(_context.t0.response);
+
+                case 9:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee, null, [[0, 6]]);
+        }));
+
+        return function (_x) {
+          return _ref.apply(this, arguments);
+        };
+      }());
     }
   }
 });
@@ -3110,10 +3156,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['data'],
+  props: ["data", "qslug"],
   computed: {
     own: function own() {
       return User.own(this.data.user_id);
+    }
+  },
+  methods: {
+    destroy: function destroy() {
+      EventBus.$emit("deleteReply", this.data.id);
     }
   }
 });
@@ -3152,7 +3203,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['qslug'],
+  props: ["qslug"],
   data: function data() {
     return {
       body: null
@@ -3176,8 +3227,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 3:
                 res = _context.sent;
-                this.body = null;
-                EventBus.$emit('newReply', res.data);
+                this.body = "";
+                EventBus.$emit("newReply", res.data);
                 window.scrollTo(0, 0);
                 _context.next = 12;
                 break;
@@ -58096,7 +58147,13 @@ var render = function() {
     { staticClass: "mt-5" },
     [
       _c("v-card-title", [
-        _vm._v(_vm._s(_vm.data.user) + " said " + _vm._s(_vm.data.created_at))
+        _vm._v(
+          _vm._s(_vm.data.user) +
+            "[" +
+            _vm._s(_vm.data.user_id) +
+            "] said " +
+            _vm._s(_vm.data.created_at)
+        )
       ]),
       _vm._v(" "),
       _c("v-card-text", { domProps: { innerHTML: _vm._s(_vm.data.body) } }),
@@ -58114,7 +58171,10 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "v-btn",
-                { attrs: { small: "", icon: "", color: "red" } },
+                {
+                  attrs: { small: "", icon: "", color: "red" },
+                  on: { click: _vm.destroy }
+                },
                 [_c("v-icon", [_vm._v("mdi-delete")])],
                 1
               )
@@ -112399,8 +112459,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/alex_neo/Documents/sites/realtimeapp/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/alex_neo/Documents/sites/realtimeapp/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/alex_neo_68/Documents/sites/realtimeapp/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/alex_neo_68/Documents/sites/realtimeapp/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ }),
