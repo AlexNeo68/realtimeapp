@@ -1,6 +1,10 @@
 <template>
 	<v-card class="mt-5">
-		<v-card-title>{{data.user}} said {{data.created_at}}</v-card-title>
+		<v-card-title>
+            {{data.user}} said {{data.created_at}}
+            <v-spacer></v-spacer>
+            <like :data="data"></like>
+        </v-card-title>
 		<div>
 			<reply-edit v-if="edit" :data="data"></reply-edit>
 			<div v-else>
@@ -19,8 +23,9 @@
 </template>
 <script>
 import ReplyEdit from './ReplyEdit';
+import Like from '../Likes/Like';
 export default {
-	components: { ReplyEdit },
+	components: { ReplyEdit, Like },
 	props: ['data', 'qslug'],
 	data() {
 		return {

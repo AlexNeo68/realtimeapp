@@ -13,39 +13,18 @@ class LikeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('JWT', ['except' => ['index']]);
+        $this->middleware('JWT');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Question $question, Reply $reply)
-    {
-        return response()->json(LikeResource::collection($reply->likes), Response::HTTP_OK);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request, Question $question, Reply $reply)
+    public function like(Reply $reply)
     {
         $like = $reply->likes()->create(['user_id' => auth()->id()]);
         return response()->json(new LikeResource($like), Response::HTTP_CREATED);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Model\Like  $like
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Question $question, Reply $reply, Like $like)
+    public function unlike(Reply $reply)
     {
+        $like = $reply->likes()->where('user_id', auth()->id())->first();
         $like->delete();
         return response()->json(new LikeResource($like), Response::HTTP_NO_CONTENT);
     }

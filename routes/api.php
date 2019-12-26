@@ -4,7 +4,13 @@ Route::apiResource('questions', 'QuestionController');
 Route::apiResource('questions/{question}/replies', 'ReplyController');
 Route::apiResource('categories', 'CategoryController');
 
-Route::apiResource('questions/{question}/replies/{reply}/likes', 'LikeController', ['except' => ['show', 'update']]);
+
+Route::post('replies/{reply}/like', 'LikeController@like');
+Route::delete('replies/{reply}/unlike', 'LikeController@unlike');
+
+Route::get('readnotifications', 'Notification\NotificationController@readnotifications');
+Route::get('unreadnotifications', 'Notification\NotificationController@unreadnotifications');
+Route::post('markasread', 'Notification\NotificationController@markasread');
 
 Route::group([
 
