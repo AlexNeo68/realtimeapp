@@ -11,14 +11,16 @@
 			<v-btn text v-for="item in items" :key="item.title" v-if="item.show">
 				<router-link :to="item.to">{{item.title}}</router-link>
 			</v-btn>
+            <profile></profile>
 		</v-toolbar-items>
 	</v-toolbar>
 </template>
 
 <script>
     import AppNotifications from './AppNotifications';
+    import Profile from './Profile/Profile';
 export default {
-    components: {AppNotifications},
+    components: {AppNotifications, Profile},
 	data() {
 		return {
 		    loggedIn: User.isLoggedIn(),

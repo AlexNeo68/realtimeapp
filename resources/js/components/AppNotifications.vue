@@ -44,6 +44,13 @@
                 this.getUnReadNotifications();
             }
 
+            Echo.private('App.User.' + User.id())
+                .notification((notification) => {
+                    this.unReadNotifications.unshift(notification);
+                    this.unReadCount++;
+                });
+
+
         },
         methods: {
             async getReadNotifications(){

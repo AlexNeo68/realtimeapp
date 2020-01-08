@@ -32,6 +32,15 @@ export default {
           console.log(error.response);
         }
       });
+        Echo.private('App.User.' + User.id())
+            .notification((notification) => {
+                console.log(notification);
+                this.replies.unshift(notification.reply);
+            });
+        Echo.channel('DeleteReplyChannel')
+            .listen('DeleteReplyEvent', (e) => {
+                this.replies = this.replies.filter(reply => reply.id!==e.id);
+            });
     }
   }
 };

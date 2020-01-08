@@ -14,6 +14,15 @@
                 liked: this.data.liked,
             }
         },
+        created(){
+            Echo.channel('LikeChannel')
+                .listen('LikeEvent', (e) => {
+                    if(this.data.id == e.id){
+                        console.log(e);
+                        e.type == 1 ? this.count++ : this.count--;
+                    }
+                });
+        },
         methods: {
             likedIt(){
                 this.liked ? this.decr() : this.inc();
@@ -22,7 +31,6 @@
             async inc(){
                 try{
                     const res = await axios.post(`/api/replies/${this.data.id}/like`);
-                    console.log(res.data);
                     this.count++;
                 } catch(e) {
                     console.log(e.response);
@@ -31,7 +39,6 @@
             async decr(){
                 try{
                     const res = await axios.delete(`/api/replies/${this.data.id}/unlike`);
-                    console.log(res.data);
                     this.count--;
                 } catch(e) {
                     console.log(e.response);
