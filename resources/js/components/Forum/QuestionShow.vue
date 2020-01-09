@@ -7,7 +7,7 @@
 					<div class="grey--text">{{data.user}} said {{data.created_at}}</div>
 				</div>
 				<v-spacer></v-spacer>
-				<v-btn primary color="green">{{data.replies_count}} replies</v-btn>
+				<v-btn primary color="green">{{replies_count}} replies</v-btn>
 			</v-card-title>
 
 			<v-card-text v-html="body"></v-card-text>
@@ -32,18 +32,39 @@ export default {
 	components: { Replies },
 	name: 'QuestionShow',
 	props: ['data'],
-	data: () => ({
-		own: false
-	}),
+	data(){
+	    return {
+		own: false,
+        replies_count: this.data.replies_count}
+	},
+    created(){
+        this.listen();
+    },
 	mounted() {
 		this.own = User.own(this.data.user_id);
 	},
 	computed: {
 		body() {
 			return md.parse(this.data.body);
-		}
+		},
 	},
 	methods: {
+	    listen(){
+            EventBus.$on("newReply", () => {
+                this.replies_count++;
+            });
+            EventBus.$on("deleteReply", () => {
+                this.replies_count--;
+            });
+            Echo.private('App.User.' + User.id())
+                .notification((notification) => {
+                    this.replies_count++;
+                });
+            Echo.channel('DeleteReplyChannel')
+                .listen('DeleteReplyEvent', (e) => {
+                    this.replies_count--;
+                });
+        },
 		initUpdate() {
 			EventBus.$emit('startEditing');
 		},

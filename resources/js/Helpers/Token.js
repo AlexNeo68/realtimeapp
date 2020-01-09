@@ -9,8 +9,21 @@ class Token {
 
     payload(token) {
         const payload = token.split(".")[1];
-        if (payload) return this.decode(payload);
+        if (payload){
+            if (this.isBase64(payload)){
+                return this.decode(payload);
+            }
+        }
         return false;
+    }
+
+    isBase64(str){
+        try {
+            return btoa(atob(str)).replace(/=/g,'') == str;
+        }catch (e) {
+            return false;
+        }
+
     }
 
     decode(data) {

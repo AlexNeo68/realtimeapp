@@ -28,7 +28,7 @@
             }
         },
         created() {
-            this.getProfile();
+            if (User.isLoggedIn()) this.getProfile();
         },
         methods: {
             async getProfile(){

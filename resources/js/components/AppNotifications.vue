@@ -59,6 +59,7 @@
                     this.readNotifications = res.data.data;
                 } catch (e) {
                     console.log(e.response);
+                    Exception.error(e);
                 }
             },
             async getUnReadNotifications(){

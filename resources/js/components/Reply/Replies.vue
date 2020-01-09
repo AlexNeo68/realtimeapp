@@ -2,7 +2,10 @@
   <div>
     <h1>Replies</h1>
     <reply v-for="(reply) in replies" :key="reply.id" :data="reply"></reply>
-    <reply-add :qslug="data.slug" class="mt-5"></reply-add>
+    <reply-add v-if="isLogged" :qslug="data.slug" class="mt-5"></reply-add>
+      <div v-else class="mt-4">
+          <router-link to="/login">LogIn to reply</router-link>
+      </div>
   </div>
 </template>
 <script>
@@ -19,10 +22,16 @@ export default {
   created() {
     this.listen();
   },
+    computed: {
+      isLogged(){
+        return User.isLoggedIn();
+      }
+    },
   methods: {
     listen() {
       EventBus.$on("newReply", reply => {
         this.replies.unshift(reply);
+        window.scroll(0,0);
       });
       EventBus.$on("deleteReply", async id => {
         try {

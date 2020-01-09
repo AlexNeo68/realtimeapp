@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof TokenExpiredException) {
-            return response()->json(['error' => 'The token is expired, please give new'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['error' => 'The token is expired'], Response::HTTP_BAD_REQUEST);
         } elseif ($exception instanceof TokenBlacklistedException) {
             return response()->json(['error' => 'The token is not support, please give new'], Response::HTTP_BAD_REQUEST);
         } elseif ($exception instanceof TokenInvalidException) {

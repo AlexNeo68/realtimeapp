@@ -1963,15 +1963,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 3:
                 res = _context.sent;
                 this.readNotifications = res.data.data;
-                _context.next = 10;
+                _context.next = 11;
                 break;
 
               case 7:
                 _context.prev = 7;
                 _context.t0 = _context["catch"](0);
                 console.log(_context.t0.response);
+                Exception.error(_context.t0);
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
@@ -3071,8 +3072,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   props: ['data'],
   data: function data() {
     return {
-      own: false
+      own: false,
+      replies_count: this.data.replies_count
     };
+  },
+  created: function created() {
+    this.listen();
   },
   mounted: function mounted() {
     this.own = User.own(this.data.user_id);
@@ -3083,6 +3088,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   methods: {
+    listen: function listen() {
+      var _this = this;
+
+      EventBus.$on("newReply", function () {
+        _this.replies_count++;
+      });
+      EventBus.$on("deleteReply", function () {
+        _this.replies_count--;
+      });
+      Echo["private"]('App.User.' + User.id()).notification(function (notification) {
+        _this.replies_count++;
+      });
+      Echo.channel('DeleteReplyChannel').listen('DeleteReplyEvent', function (e) {
+        _this.replies_count--;
+      });
+    },
     initUpdate: function initUpdate() {
       EventBus.$emit('startEditing');
     },
@@ -3421,7 +3442,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     };
   },
   created: function created() {
-    this.getProfile();
+    if (User.isLoggedIn()) this.getProfile();
   },
   methods: {
     getProfile: function () {
@@ -3493,6 +3514,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3509,12 +3533,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   created: function created() {
     this.listen();
   },
+  computed: {
+    isLogged: function isLogged() {
+      return User.isLoggedIn();
+    }
+  },
   methods: {
     listen: function listen() {
       var _this = this;
 
       EventBus.$on("newReply", function (reply) {
         _this.replies.unshift(reply);
+
+        window.scroll(0, 0);
       });
       EventBus.$on("deleteReply",
       /*#__PURE__*/
@@ -68467,7 +68498,7 @@ var render = function() {
               _c("v-spacer"),
               _vm._v(" "),
               _c("v-btn", { attrs: { primary: "", color: "green" } }, [
-                _vm._v(_vm._s(_vm.data.replies_count) + " replies")
+                _vm._v(_vm._s(_vm.replies_count) + " replies")
               ])
             ],
             1
@@ -68773,7 +68804,21 @@ var render = function() {
         return _c("reply", { key: reply.id, attrs: { data: reply } })
       }),
       _vm._v(" "),
-      _c("reply-add", { staticClass: "mt-5", attrs: { qslug: _vm.data.slug } })
+      _vm.isLogged
+        ? _c("reply-add", {
+            staticClass: "mt-5",
+            attrs: { qslug: _vm.data.slug }
+          })
+        : _c(
+            "div",
+            { staticClass: "mt-4" },
+            [
+              _c("router-link", { attrs: { to: "/login" } }, [
+                _vm._v("LogIn to reply")
+              ])
+            ],
+            1
+          )
     ],
     2
   )
@@ -121648,6 +121693,50 @@ function () {
 
 /***/ }),
 
+/***/ "./resources/js/Helpers/Exception.js":
+/*!*******************************************!*\
+  !*** ./resources/js/Helpers/Exception.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./User */ "./resources/js/Helpers/User.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Exception =
+/*#__PURE__*/
+function () {
+  function Exception() {
+    _classCallCheck(this, Exception);
+  }
+
+  _createClass(Exception, [{
+    key: "error",
+    value: function error(_error) {
+      this.handle(_error.response.data.error);
+    }
+  }, {
+    key: "handle",
+    value: function handle(message) {
+      if (message == 'The token is expired') _User__WEBPACK_IMPORTED_MODULE_0__["default"].logout();
+    }
+  }]);
+
+  return Exception;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = (Exception = new Exception());
+
+/***/ }),
+
 /***/ "./resources/js/Helpers/Token.js":
 /*!***************************************!*\
   !*** ./resources/js/Helpers/Token.js ***!
@@ -121680,8 +121769,23 @@ function () {
     key: "payload",
     value: function payload(token) {
       var payload = token.split(".")[1];
-      if (payload) return this.decode(payload);
+
+      if (payload) {
+        if (this.isBase64(payload)) {
+          return this.decode(payload);
+        }
+      }
+
       return false;
+    }
+  }, {
+    key: "isBase64",
+    value: function isBase64(str) {
+      try {
+        return btoa(atob(str)).replace(/=/g, '') == str;
+      } catch (e) {
+        return false;
+      }
     }
   }, {
     key: "decode",
@@ -121838,7 +121942,7 @@ function () {
       var storedToken = _AppStorage__WEBPACK_IMPORTED_MODULE_2__["default"].getToken();
 
       if (storedToken) {
-        return _Token__WEBPACK_IMPORTED_MODULE_1__["default"].isValid(storedToken) ? true : false;
+        return _Token__WEBPACK_IMPORTED_MODULE_1__["default"].isValid(storedToken) ? true : this.logout();
       }
 
       return false;
@@ -121973,7 +122077,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var marked__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! marked */ "./node_modules/marked/lib/marked.js");
 /* harmony import */ var marked__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(marked__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _Helpers_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Helpers/User */ "./resources/js/Helpers/User.js");
-/* harmony import */ var _Router_router__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Router/router */ "./resources/js/Router/router.js");
+/* harmony import */ var _Helpers_Exception__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Helpers/Exception */ "./resources/js/Helpers/Exception.js");
+/* harmony import */ var _Router_router__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Router/router */ "./resources/js/Router/router.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
@@ -122004,12 +122109,14 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component("AppHome", __webpack_requir
 
 
 window.User = _Helpers_User__WEBPACK_IMPORTED_MODULE_5__["default"];
+
+window.Exception = _Helpers_Exception__WEBPACK_IMPORTED_MODULE_6__["default"];
 window.EventBus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 
 var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   el: "#app",
   vuetify: new vuetify__WEBPACK_IMPORTED_MODULE_1___default.a(),
-  router: _Router_router__WEBPACK_IMPORTED_MODULE_6__["default"]
+  router: _Router_router__WEBPACK_IMPORTED_MODULE_7__["default"]
 });
 
 /***/ }),
