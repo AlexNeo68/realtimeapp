@@ -1,7 +1,7 @@
 <template>
-	<v-toolbar>
+	<v-toolbar color="indigo" dark>
 		<v-toolbar-title>
-			<router-link to="/">ReakTimeForum</router-link>
+			<router-link to="/" class="white--text">ReakTimeForum</router-link>
 		</v-toolbar-title>
 
 		<v-spacer></v-spacer>
@@ -9,7 +9,7 @@
 		<v-toolbar-items>
             <app-notifications v-if="loggedIn"></app-notifications>
 			<v-btn text v-for="item in items" :key="item.title" v-if="item.show">
-				<router-link :to="item.to">{{item.title}}</router-link>
+				<router-link :to="item.to" class="white--text">{{item.title}}</router-link>
 			</v-btn>
             <profile></profile>
 		</v-toolbar-items>

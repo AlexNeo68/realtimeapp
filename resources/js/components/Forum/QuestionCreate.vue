@@ -6,10 +6,11 @@
         <v-alert type="error" v-if="error">{{error}}</v-alert>
 
         <div v-if="errors">
-          <v-alert type="error" v-for="(error,key) in errors" :key="key">{{error}}</v-alert>
+          <v-alert type="error" v-for="(error,key) in errors" :key="key">{{error[0]}}</v-alert>
         </div>
 
         <v-text-field v-model="form.title" type="text" label="Title" required></v-text-field>
+          <div class="error--text mb-5" v-if="errors&&errors.title">{{errors.title[0]}}</div>
         <v-select
           v-model="form.category_id"
           :items="categories"
@@ -17,12 +18,14 @@
           item-value="id"
           label="Category"
         ></v-select>
+          <div class="error--text mb-5" v-if="errors&&errors.category_id">{{errors.category_id[0]}}</div>
 
         <vue-simplemde v-model="form.body" />
+          <div class="error--text mb-5" v-if="errors&&errors.body">{{errors.body[0]}}</div>
       </v-card-text>
 
       <v-card-actions>
-        <v-btn color="success" type="submit">Ask</v-btn>
+        <v-btn color="success" type="submit" :disabled="disabled">Ask</v-btn>
       </v-card-actions>
     </v-form>
   </v-card>
@@ -41,6 +44,12 @@ export default {
     errors: null,
     error: null
   }),
+    computed: {
+      disabled(){
+          return false;
+          // return !this.form.title || !this.form.category_id || !this.form.body
+      }
+    },
   async created() {
     try {
       const res = await axios.get(`/api/categories`);
@@ -54,6 +63,7 @@ export default {
       try {
         let res = await axios.post("/api/questions", this.form);
         console.log(res);
+        this.$router.push({name: 'forum'});
       } catch (e) {
         console.log(e.response);
         if (e.response.status == 400) {

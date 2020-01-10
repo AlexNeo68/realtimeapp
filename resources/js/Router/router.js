@@ -10,8 +10,10 @@ import Logout from "../components/Auth/Logout";
 import Question from "../components/Forum/Question";
 import QuestionCreate from "../components/Forum/QuestionCreate";
 import CategoryAdd from "../components/Category/CategoryAdd";
+import Parallax from "../components/Parallax";
 
 const routes = [
+    { path: "/", component: Parallax },
     { path: "/login", component: Login },
     { path: "/signup", component: Signup },
     { path: "/forum", component: Forum, name: "forum" },

@@ -16,7 +16,7 @@ class ReplyResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => $this->user->name,
+            'user' => $this->user ? $this->user->name : null,
             'user_id' => $this->user_id,
             'body' => $this->body,
             'question_slug' => $this->question->slug,

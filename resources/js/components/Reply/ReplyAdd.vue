@@ -7,7 +7,7 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-btn color="success" type="submit" @click="submit">Reply</v-btn>
+        <v-btn color="success" type="submit" @click="submit" :disabled="disabled">Reply</v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -33,6 +33,11 @@ export default {
         console.log(error.response);
       }
     }
-  }
+  },
+    computed: {
+      disabled(){
+          return !this.body;
+      }
+    }
 };
 </script>
