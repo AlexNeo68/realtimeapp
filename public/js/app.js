@@ -1949,12 +1949,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
 
     Echo["private"]('App.User.' + User.id()).notification(function (notification) {
+      _this.playSound();
+
       _this.unReadNotifications.unshift(notification);
 
       _this.unReadCount++;
     });
   },
   methods: {
+    playSound: function playSound() {
+      var sound = new Audio('https://freesound.org/data/previews/501/501697_1648170-lq.mp3');
+      sound.play();
+    },
     getReadNotifications: function () {
       var _getReadNotifications = _asyncToGenerator(
       /*#__PURE__*/
@@ -3634,8 +3640,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         };
       }());
       Echo["private"]('App.User.' + User.id()).notification(function (notification) {
-        console.log(notification);
-
         _this.replies.unshift(notification.reply);
       });
       Echo.channel('DeleteReplyChannel').listen('DeleteReplyEvent', function (e) {

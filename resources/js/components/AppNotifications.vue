@@ -46,13 +46,16 @@
 
             Echo.private('App.User.' + User.id())
                 .notification((notification) => {
+                    this.playSound();
                     this.unReadNotifications.unshift(notification);
                     this.unReadCount++;
                 });
-
-
         },
         methods: {
+            playSound(){
+                let sound = new Audio('https://freesound.org/data/previews/501/501697_1648170-lq.mp3');
+                sound.play();
+            },
             async getReadNotifications(){
                 try {
                     const res = await axios.get('/api/readnotifications');
