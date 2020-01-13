@@ -2569,6 +2569,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2578,39 +2581,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   data: function data() {
     return {
-      questions: []
+      questions: [],
+      meta: {}
     };
   },
   created: function () {
     var _created = _asyncToGenerator(
     /*#__PURE__*/
     _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-      var res;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return axios.get("api/questions");
+              this.getQuestions();
 
-            case 3:
-              res = _context.sent;
-              this.questions = res.data.data;
-              _context.next = 10;
-              break;
-
-            case 7:
-              _context.prev = 7;
-              _context.t0 = _context["catch"](0);
-              console.log(_context.t0.response);
-
-            case 10:
+            case 1:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee, this, [[0, 7]]);
+      }, _callee, this);
     }));
 
     function created() {
@@ -2618,7 +2608,49 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
 
     return created;
-  }()
+  }(),
+  methods: {
+    getQuestions: function () {
+      var _getQuestions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(page) {
+        var url, res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                url = page ? "api/questions?page=".concat(page) : "api/questions";
+                _context2.next = 4;
+                return axios.get(url);
+
+              case 4:
+                res = _context2.sent;
+                this.questions = res.data.data;
+                this.meta = res.data.meta;
+                _context2.next = 12;
+                break;
+
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](0);
+                console.log(_context2.t0.response);
+
+              case 12:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 9]]);
+      }));
+
+      function getQuestions(_x) {
+        return _getQuestions.apply(this, arguments);
+      }
+
+      return getQuestions;
+    }()
+  }
 });
 
 /***/ }),
@@ -68211,14 +68243,35 @@ var render = function() {
           _c(
             "v-col",
             { attrs: { cols: "12", sm: "8" } },
-            _vm._l(_vm.questions, function(question) {
-              return _c("question", {
-                key: question.id,
-                staticClass: "mb-2",
-                attrs: { data: question }
-              })
-            }),
-            1
+            [
+              _vm._l(_vm.questions, function(question) {
+                return _c("question", {
+                  key: question.id,
+                  staticClass: "mb-2",
+                  attrs: { data: question }
+                })
+              }),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "text-center" },
+                [
+                  _c("v-pagination", {
+                    attrs: { length: _vm.meta.total, circle: "" },
+                    on: { input: _vm.getQuestions },
+                    model: {
+                      value: _vm.meta.current_page,
+                      callback: function($$v) {
+                        _vm.$set(_vm.meta, "current_page", $$v)
+                      },
+                      expression: "meta.current_page"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            2
           ),
           _vm._v(" "),
           _c("v-col", { attrs: { sm: "4" } }, [_c("sidebar")], 1)
@@ -122318,10 +122371,10 @@ if (JwtToken) {
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "93eb25b50e3dafce4bb7",
-  cluster: "eu",
-  encrypted: true,
-  forceTLS: true,
+  key: 'myPusherKey',
+  wsHost: window.location.hostname,
+  wsPort: 6001,
+  disableStats: true,
   auth: {
     headers: {
       Authorization: "Bearer ".concat(JwtToken)
